@@ -69,25 +69,38 @@ class _HomeViewState extends ConsumerState<HomeView> {
       backgroundColor: AppTheme.bgColor,
       body: Stack(
         children: [
-          // Background blobs for iOS glass effect reflection (STATIC for extreme performance)
+          // Background blobs (Performance optimized with RadialGradients)
           Positioned(
             top: 200, left: 100,
-            child: ImageFiltered(
-              imageFilter: ImageFilter.blur(sigmaX: 100, sigmaY: 100),
-              child: Container(width: 400, height: 400, decoration: BoxDecoration(shape: BoxShape.circle, color: AppTheme.accentColor.withAlpha(40))),
+            child: Container(
+              width: 400, height: 400, 
+              decoration: BoxDecoration(
+                shape: BoxShape.circle, 
+                gradient: RadialGradient(
+                  colors: [AppTheme.accentColor.withAlpha(50), Colors.transparent],
+                  stops: const [0.1, 1.0],
+                )
+              )
             ),
           ),
           Positioned(
             top: size.height * 1.5, right: 100,
-            child: ImageFiltered(
-              imageFilter: ImageFilter.blur(sigmaX: 100, sigmaY: 100),
-              child: Container(width: 500, height: 500, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.blueAccent.withAlpha(30))),
+            child: Container(
+              width: 500, height: 500, 
+              decoration: BoxDecoration(
+                shape: BoxShape.circle, 
+                gradient: RadialGradient(
+                  colors: [Colors.blueAccent.withAlpha(40), Colors.transparent],
+                  stops: const [0.1, 1.0],
+                )
+              )
             ),
           ),
           
           // Main Scrollable Content
           SingleChildScrollView(
             controller: _scrollController,
+            physics: const BouncingScrollPhysics(),
             child: Column(
               children: [
                 SizedBox(height: isDesktop ? 100 : 80), 
@@ -138,17 +151,12 @@ class _HomeViewState extends ConsumerState<HomeView> {
           // Fixed Navigation Bar (Authentic iOS Glass)
           Positioned(
             top: 0, left: 0, right: 0,
-            child: ClipRRect(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppTheme.bgColor.withAlpha(180), // iOS Dark Mode Glass
-                    border: Border(bottom: BorderSide(color: Colors.white.withAlpha(15), width: 0.5)),
-                  ),
-                  child: _buildNavBar(isDesktop),
-                ),
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppTheme.bgColor.withAlpha(240), // Dark background for max performance
+                border: Border(bottom: BorderSide(color: Colors.white.withAlpha(15), width: 0.5)),
               ),
+              child: _buildNavBar(isDesktop),
             ), 
           ),
         ],
@@ -159,13 +167,13 @@ class _HomeViewState extends ConsumerState<HomeView> {
   // ============== NAVBAR ==============
   Widget _buildNavBar(bool isDesktop) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0),
+      padding: EdgeInsets.symmetric(horizontal: isDesktop ? 40.0 : 20.0, vertical: 20.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             children: [
-              Text('MAHESH KUMAR SUTHAR', style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24)),
+              Text('MAHESH KUMAR SUTHAR', style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold, fontSize: isDesktop ? 24 : 16)),
               const SizedBox(width: 10),
               if (isDesktop)
                 Text('[ FLUTTER DEVELOPER ]', style: GoogleFonts.inter(color: AppTheme.textSecondaryColor, letterSpacing: 1.5, fontSize: 12)),
@@ -325,7 +333,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
           width: double.infinity,
           child: Column(
             children: [
-              Text('Hello', style: GoogleFonts.inter(fontSize: 100, fontWeight: FontWeight.w900, color: AppTheme.darkText, height: 0.9, letterSpacing: -5)),
+              Text('Hello', style: GoogleFonts.inter(fontSize: 80, fontWeight: FontWeight.w900, color: AppTheme.darkText, height: 0.9, letterSpacing: -5)),
               const SizedBox(height: 20),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -342,7 +350,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
             children: [
               Text(
                 "I turn complex app ideas into beautiful, smooth Flutter applications.", 
-                style: GoogleFonts.inter(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w300, height: 1.2),
+                style: GoogleFonts.inter(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w300, height: 1.2),
               ),
               const SizedBox(height: 20),
               Text(
@@ -417,16 +425,14 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 children: homeState.projects.map((project) {
                   return ClipRRect(
                     borderRadius: BorderRadius.circular(24),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20), // Authentic iOS blur
-                      child: Container(
-                        width: isDesktop ? 400 : double.infinity,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withAlpha(12), // Authentic iOS translucency (very subtle)
-                          border: Border.all(color: Colors.white.withAlpha(25), width: 0.5), // Hairline border
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        child: Column(
+                    child: Container(
+                      width: isDesktop ? 400 : double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withAlpha(12), // Very subtle background instead of heavy blur
+                        border: Border.all(color: Colors.white.withAlpha(25), width: 0.5), // Hairline border
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             // Project Image Placeholder
@@ -465,7 +471,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
                           ],
                         ),
                       ),
-                    ),
                   );
                 }).toList(),
               ),
