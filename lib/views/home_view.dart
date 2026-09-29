@@ -67,6 +67,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
     return Scaffold(
       backgroundColor: AppTheme.bgColor,
+      endDrawer: !isDesktop ? _buildMobileDrawer() : null,
       body: Stack(
         children: [
           // Background blobs (Performance optimized with RadialGradients)
@@ -189,7 +190,14 @@ class _HomeViewState extends ConsumerState<HomeView> {
               ],
             )
           else
-            const Icon(Icons.menu, color: Colors.white),
+            Builder(
+              builder: (context) => IconButton(
+                icon: const Icon(Icons.menu, color: Colors.white, size: 28),
+                onPressed: () {
+                  Scaffold.of(context).openEndDrawer();
+                },
+              ),
+            ),
         ],
       ),
     );
@@ -235,6 +243,53 @@ class _HomeViewState extends ConsumerState<HomeView> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildMobileDrawer() {
+    return Drawer(
+      backgroundColor: AppTheme.bgColor,
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(
+              color: AppTheme.bgColor,
+              border: Border(bottom: BorderSide(color: Colors.white.withAlpha(20))),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text('MENU', style: GoogleFonts.inter(color: AppTheme.accentColor, fontWeight: FontWeight.bold, letterSpacing: 2)),
+                const SizedBox(height: 10),
+              ],
+            ),
+          ),
+          _mobileNavLink('Home', _heroKey),
+          _mobileNavLink('About Me', _aboutKey),
+          _mobileNavLink('Projects', _projectsKey),
+          _mobileNavLink('Contact', _contactKey),
+        ],
+      ),
+    );
+  }
+
+  Widget _mobileNavLink(String title, GlobalKey key) {
+    final isActive = _activeSection == title;
+    return ListTile(
+      title: Text(
+        title,
+        style: GoogleFonts.inter(
+          color: isActive ? AppTheme.accentColor : Colors.white70,
+          fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+          fontSize: 18,
+        ),
+      ),
+      onTap: () {
+        Navigator.pop(context); // Close drawer
+        _scrollTo(key, title);
+      },
     );
   }
 
